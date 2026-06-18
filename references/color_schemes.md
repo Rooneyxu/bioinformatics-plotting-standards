@@ -352,6 +352,17 @@ sns.heatmap(expr_data, cmap="plasma", cbar_kws={"label": "Expression (log2 TPM)"
 sns.heatmap(zscore_data, cmap=cmap_pg, center=0, vmin=-3, vmax=3,
             cbar_kws={"label": "Z-score"})
 
+# 带列分组（Control / Treatment 等）— 用独立 annotation axes，勿叠 xlabel
+# 见 references/heatmap-annotation.md 与 scripts/heatmap_annotation.py
+from scripts.heatmap_annotation import plot_heatmap_with_col_groups
+
+fig, ax_heat, ax_ann = plot_heatmap_with_col_groups(
+    zscore_df,
+    col_groups=["Control"] * 4 + ["AD"] * 4,
+    group_colors={"Control": "#BEBEBE", "AD": "#A362AC"},
+    cmap=cmap_pg, center=0, vmin=-3, vmax=3,
+)
+
 # fold-change 若需红蓝语义
 sns.heatmap(fc_data, cmap="RdBu_r", center=0, vmin=-3, vmax=3)
 ```

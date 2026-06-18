@@ -279,6 +279,7 @@ ggsave("figure.svg", p, width = 3, height = 4, units = "in")
 | [references/export-policy.md](references/export-policy.md) | publication / communication 分层导出 |
 | [references/color_schemes.md](references/color_schemes.md) | 序列/发散/Nature AD2024/Li Lab/NMI Pastel |
 | [references/violin-boxplot.md](references/violin-boxplot.md) | 小提琴+箱线叠画（matplotlib 推荐、配色、参数） |
+| [references/heatmap-annotation.md](references/heatmap-annotation.md) | 热图列分组注释（GridSpec 分轴，避免底栏叠字） |
 | [references/journal_requirements.md](references/journal_requirements.md) | Nature/Cell/Science 尺寸与字体 |
 | [references/troubleshooting.md](references/troubleshooting.md) | 标签重叠、截断、colorbar 等 |
 
@@ -291,6 +292,7 @@ ggsave("figure.svg", p, width = 3, height = 4, units = "in")
 - [ ] 后端已选定（默认 Python；投稿/R 场景已确认）
 - [ ] 字体与 `ticks` 主题已在绘图前设置
 - [ ] 配色色盲友好；发散热图默认 Nature 紫–绿；UMAP 用定性色（含棕）；violin+box 用 Li Lab
+- [ ] 热图有列分组时用 `heatmap_annotation.py` 或独立 axes；勿在热图上叠手绘色条 + `xlabel`
 - [ ] 导出档正确（publication 或 communication）
 - [ ] 标签无重叠；基因名斜体
 - [ ] `sns.despine()`；轴标签含单位

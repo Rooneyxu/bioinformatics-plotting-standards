@@ -4,6 +4,16 @@
 
 典型图表：火山图、热图、UMAP/t-SNE、violin、dotplot、Manhattan/GWAS、spatial、barplot 等。
 
+## 示意图
+
+由 `examples/` 目录下的测试脚本生成（Li Lab triple 小提琴+箱线；Nature AD2024 紫–绿发散热图 + 列分组注释）。
+
+| 小提琴 + 箱线（Li Lab `triple`） | 热图（Nature 紫–绿 + 分组色条） |
+|:---:|:---:|
+| ![Violin + box plot](examples/skill_test_violin_module_score.png) | ![Heatmap with column groups](examples/skill_test_heatmap_deg_zscore.png) |
+
+复现：`bioinformatics-plotting-standards-workspace/skill-test/test_skill_plots.py`（或仓库内 `scripts/violin_boxplot.py` + `scripts/heatmap_annotation.py`）。
+
 ---
 
 ## 来源与致谢
@@ -13,7 +23,7 @@
 | 来源 | 说明 |
 |------|------|
 | [**Yuan1z0825/nature-skills**](https://github.com/Yuan1z0825/nature-skills) | 符合 Nature 论文学术表达与科研绘图的 Skill 集合；本仓库主要借鉴其中的 **`nature-figure`** 绘图规范（字体、配色、导出、panel 信息架构、NMI Pastel 等），并将复杂投稿 figure 仍路由回该仓库的 `nature-figure` |
-| **BioMini 绘图说明** | 工作流中的生信可视化指南（何时出图、Python/R 技术栈、色盲友好配色、标签防重叠、分层导出等），与本 Skill 的 `when-to-plot`、`backend-selection`、`export-policy` 等章节对应 |
+| **biomni** 生信 Agent 绘图规范 | 工作流中的生信可视化指南（何时出图、Python/R 技术栈、色盲友好配色、标签防重叠、分层导出等），与本 Skill 的 `when-to-plot`、`backend-selection`、`export-policy` 等章节对应 |
 
 在此基础上，作者根据自身生信分析场景做了以下定制：
 
@@ -75,10 +85,15 @@ bioinformatics-plotting-standards/
 │   ├── backend-selection.md
 │   ├── export-policy.md
 │   ├── color_schemes.md
+│   ├── heatmap-annotation.md
 │   ├── journal_requirements.md
 │   └── troubleshooting.md
 ├── scripts/
-│   └── qc.py                # 出图后 DPI / 格式 / 留白检查
+│   ├── qc.py                # 出图后 DPI / 格式 / 留白检查
+│   ├── violin_boxplot.py    # Li Lab 小提琴+箱线
+│   ├── heatmap_annotation.py # 热图列分组注释
+│   └── nature_ad2024_colors.py
+├── examples/                # README 示意图（PNG）
 └── evals/                   # skill-creator 行为与触发测试集
     ├── evals.json
     ├── trigger_eval.json

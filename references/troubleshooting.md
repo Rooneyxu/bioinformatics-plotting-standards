@@ -171,6 +171,33 @@ fig.savefig("output.png", dpi=600, bbox_inches="tight")  # 自动裁剪
 
 ---
 
+## 热图底部分组注释重叠
+
+### 症状
+- 热图底部出现 `Control`、`Sample`、`AD` 挤在同一行
+- 分组色条与 x 轴标题重复表达列信息
+
+### 原因
+在热图 `ax` 上用 `transData` + `clip_on=False` 手绘色条和组名，同时又 `set_xlabel("Sample")`，与 matplotlib 自动布局抢空间。
+
+### 解决方案
+使用 [heatmap-annotation.md](heatmap-annotation.md) 中的 **GridSpec 分轴** 或 `scripts/heatmap_annotation.py`：
+
+```python
+from scripts.heatmap_annotation import plot_heatmap_with_col_groups
+
+fig, ax_heat, ax_ann = plot_heatmap_with_col_groups(
+    zscore_df,
+    col_groups=["Control"] * 4 + ["AD"] * 4,
+    group_colors={"Control": "#BEBEBE", "AD": "#A362AC"},
+    cmap=get_diverging_cmap(),
+    center=0, vmin=-3, vmax=3,
+)
+# 有底部分组条时不要再 set_xlabel
+```
+
+---
+
 ## Colorbar 位置问题
 
 ### 症状
