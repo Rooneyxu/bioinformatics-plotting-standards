@@ -93,10 +93,11 @@ ax.tick_params(axis="x", which="major", pad=3)
 
 ### 4. 选择配色方案
 
-- **序列数据**：`plasma` / `plasma_r`
-- **发散数据**：`RdBu_r`
-- **分类对比（4–8 组）**：NMI Pastel（见 [color_schemes.md](references/color_schemes.md)）
-- **简单 2–3 组**：Nature 三色或 Set2
+- **序列数据**：`plasma` / `plasma_r`（仅正值强度）
+- **发散数据**：**Nature AD2024 紫–绿**（默认）；`RdBu_r` 仅当红蓝语义必要
+- **UMAP / 多 cluster**：Nature AD2024 定性色（含棕 `#8C564B`）
+- **分类对比（4–8 组）**：NMI Pastel
+- **小提琴+箱线叠画**：Li Lab `pair` / `triple`
 - **避免**：jet、rainbow、红绿组合
 
 ### 5. 移除不必要的边框
@@ -260,9 +261,11 @@ ggsave("figure.svg", p, width = 3, height = 4, units = "in")
 | 注释标签 | 5-6 pt | adjustText/ggrepel |
 | PNG（投稿） | 600 DPI | publication 档 |
 | PNG（沟通） | 300 DPI | communication 档 |
-| 序列配色 | plasma | 色盲友好 |
-| 发散配色 | RdBu_r | |
-| 分类（多组） | NMI Pastel | 见 color_schemes.md |
+| 序列配色 | plasma | 仅正值强度 |
+| 发散配色 | Nature 紫–绿 | 默认；`RdBu_r` 备选 |
+| UMAP / 多 cluster | Nature AD2024 定性 | 含棕 `#8C564B` |
+| 分类（多组 bar） | NMI Pastel | 见 color_schemes.md |
+| 小提琴+箱线 | Li Lab pair/triple | 见 violin-boxplot.md |
 | seaborn 主题 | ticks | |
 
 ---
@@ -274,7 +277,8 @@ ggsave("figure.svg", p, width = 3, height = 4, units = "in")
 | [references/when-to-plot.md](references/when-to-plot.md) | 何时出图、GenerateImage 路由、与 nature-figure 边界 |
 | [references/backend-selection.md](references/backend-selection.md) | Python/R 门禁与互斥规则 |
 | [references/export-policy.md](references/export-policy.md) | publication / communication 分层导出 |
-| [references/color_schemes.md](references/color_schemes.md) | 序列/发散/分类/NMI Pastel |
+| [references/color_schemes.md](references/color_schemes.md) | 序列/发散/Nature AD2024/Li Lab/NMI Pastel |
+| [references/violin-boxplot.md](references/violin-boxplot.md) | 小提琴+箱线叠画（matplotlib 推荐、配色、参数） |
 | [references/journal_requirements.md](references/journal_requirements.md) | Nature/Cell/Science 尺寸与字体 |
 | [references/troubleshooting.md](references/troubleshooting.md) | 标签重叠、截断、colorbar 等 |
 
@@ -286,7 +290,7 @@ ggsave("figure.svg", p, width = 3, height = 4, units = "in")
 - [ ] 未主动出图；若建议了出图则已获用户确认
 - [ ] 后端已选定（默认 Python；投稿/R 场景已确认）
 - [ ] 字体与 `ticks` 主题已在绘图前设置
-- [ ] 配色色盲友好；分类多组考虑 NMI Pastel
+- [ ] 配色色盲友好；发散热图默认 Nature 紫–绿；UMAP 用定性色（含棕）；violin+box 用 Li Lab
 - [ ] 导出档正确（publication 或 communication）
 - [ ] 标签无重叠；基因名斜体
 - [ ] `sns.despine()`；轴标签含单位

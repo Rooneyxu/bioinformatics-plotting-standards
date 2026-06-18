@@ -54,30 +54,42 @@ plt.imshow(data, cmap='cividis')
 
 ### 发散数据（Diverging）
 
-用于表示双向变化的数据，如 z-scores、fold-changes、相关系数。
+用于表示双向变化的数据，如 z-scores、fold-changes、相关系数、表型连续评分。
 
-#### RdBu_r（推荐）
-- **用途**：差异表达、z-scores、相关性
-- **特点**：蓝色（低/负）→ 白色（中性）→ 红色（高/正）
+#### Nature AD2024 紫–绿（**默认推荐**）
+
+- **来源**：Green et al., *Nature* 2024（`lilab_plot_code/配色.pdf`）；Fig.1c 认知下降率、发散热图
+- **特点**：负值/低端 **紫** `#7B3294` → 白 → 正值/高端 **绿** `#008837`；比 `RdBu_r` 更贴近 Nature 版面，色盲友好
+- **用途**：z-score 热图、相关矩阵、连续表型散点着色、轨迹评分
 - **代码**：
+
 ```python
-plt.imshow(data, cmap='RdBu_r', vmin=-3, vmax=3, center=0)
+from scripts.nature_ad2024_colors import get_diverging_cmap
+
+cmap_pg = get_diverging_cmap()
+sns.heatmap(zscore_data, cmap=cmap_pg, center=0, vmin=-3, vmax=3,
+            cbar_kws={"label": "Z-score"})
+# 散点连续着色
+ax.scatter(x, y, c=values, cmap=cmap_pg, vmin=-0.3, vmax=0.1)
 ```
 
-#### PuOr
-- **用途**：替代 RdBu_r
-- **特点**：紫色（低）→ 白色 → 橙色（高）
+#### RdBu_r（传统红蓝语义）
+
+- **用途**：需明确 **红=上调/正、蓝=下调/负** 的火山图、fold-change 热图（读者习惯红蓝时保留）
+- **特点**：蓝色（低/负）→ 白色 → 红色（高/正）
 - **代码**：
+
 ```python
-plt.imshow(data, cmap='PuOr')
+plt.imshow(data, cmap="RdBu_r", vmin=-3, vmax=3)
 ```
 
-#### BrBG
-- **用途**：环境数据、生态学数据
-- **特点**：棕色（低）→ 白色 → 蓝绿色（高）
-- **代码**：
+#### PuOr / BrBG
+
+- **PuOr**：紫–橙发散，RdBu_r 与 Nature 紫绿之间的折中
+- **BrBG**：**棕**–白–蓝绿发散；低端棕色可与 `NATURE_BROWN_TERRACOTTA` 呼应
+
 ```python
-plt.imshow(data, cmap='BrBG')
+plt.imshow(data, cmap="BrBG", center=0)
 ```
 
 ---
@@ -118,12 +130,38 @@ nature_colors = {
 }
 ```
 
+#### Nature AD2024 多类别（UMAP / 细胞亚群，**含棕色**）
+
+用于 scanpy UMAP、dotplot 多 cluster、图例 ≥4 类；**优先于 tab10**。棕色 `#8C564B` 适合小胶质/髓系等亚群（Mic.12/13 赤褐）。
+
+```python
+from scripts.nature_ad2024_colors import QUALITATIVE_NATURE_AD2024, qualitative_palette
+
+palette = qualitative_palette(df["cluster"].nunique())
+# scanpy
+adata.uns["cluster_colors"] = palette[: adata.obs["cluster"].nunique()]
+sc.pl.umap(adata, color="cluster", palette=palette)
+```
+
+| 角色 | Hex | 备注 |
+|------|-----|------|
+| 深紫 | `#762A83` | Mic.7 |
+| 森林绿 | `#008837` | Mic.9 |
+| **赤褐** | `#8C564B` | **Mic.12/13，主推棕色** |
+| 海军蓝 | `#016FAF` | Mic.1/16 |
+| 鼠尾草绿 | `#5AAE61` | Mic.3–5 |
+| 薰衣草 | `#C2A5CF` | Mic.6/10/11 |
+| 金棕 | `#BF812D` | 强调色 |
+| 褐紫 | `#9970AB` | Mic.15 |
+
+完整列表见 `scripts/nature_ad2024_colors.py` 中 `QUALITATIVE_NATURE_AD2024`。
+
 ---
 
 ## NMI Pastel 分类配色（方法对比 / 多组条形图）
 
 用于**分类变量**（处理组、细胞类型、方法变体），尤其多个相关方法属于同一色系、需要页面视觉统一时。
-连续/发散数据仍用 `plasma` / `RdBu_r`，不要用 pastel 替代热图 colormap。
+连续/发散数据仍用 `plasma` 或 **Nature 紫–绿** / `RdBu_r`，不要用 pastel 替代热图 colormap。
 
 **原则**（借鉴 nature-figure）：
 
@@ -183,12 +221,105 @@ ggplot(df, aes(x = gene, y = expression, fill = group)) +
 
 | 场景 | 推荐 |
 |---|---|
-| 2–3 组简单对比 | Nature 三色 `#0173B2` / `#DE8F05` / `#029E73` 或 Set2 |
+| 2–3 组简单对比 | Nature 三色或 Li Lab triple |
+| **小提琴+箱线叠画（Li Lab）** | pair / triple；见 [violin-boxplot.md](violin-boxplot.md) |
 | 4–8 组方法/变体对比 | NMI Pastel |
-| 连续表达/强度 | plasma / viridis（不用 pastel） |
-| 正负 fold-change | RdBu_r；方向标注用 delta_up / delta_down |
+| **UMAP / 多细胞亚群（含棕）** | **Nature AD2024 定性色** `qualitative_palette()` |
+| 连续表达/强度 | plasma / viridis；**分类计数条**用顺序紫 `NATURE_SEQ_PURPLE` |
+| z-score / 相关 / 连续表型 | **Nature 紫–绿发散**（默认）；`RdBu_r` 仅当红蓝语义必要 |
+| 火山 fold-change 热图 | `RdBu_r` 或 Nature 紫–绿（与全文统一即可） |
 
 ---
+
+## Nature AD2024 配色（Green et al., 2024）
+
+参考 `lilab_plot_code/配色.pdf` 与 `oyj/供参考的配色*.pptx`。与 **Li Lab violin 分类色**分工：Li Lab 管 2–3 组统计图；本节管 **连续发散、多 cluster、棕色亚群**。
+
+### 发散紫–绿（替代默认 RdBu_r 的首选）
+
+| 端点 | Hex |
+|------|-----|
+| 负/低 | `#7B3294` |
+| 零 | `#FFFFFF` |
+| 正/高 | `#008837` |
+
+```python
+from scripts.nature_ad2024_colors import get_diverging_cmap
+cmap = get_diverging_cmap()
+```
+
+### 顺序紫（Fig.1b 条形图 / 单变量等级）
+
+`#E7D4E8` → `#C2A5CF` → `#A17CB4` → `#8B5A9F` → `#762A83`
+
+```python
+from scripts.nature_ad2024_colors import NATURE_SEQ_PURPLE, get_sequential_purple_cmap
+
+ax.bar(x, height, color=NATURE_SEQ_PURPLE[: len(x)])
+# 或连续色带
+sns.heatmap(data, cmap=get_sequential_purple_cmap())
+```
+
+### 棕色系（UMAP 小胶质等）
+
+| 名称 | Hex | 用途 |
+|------|-----|------|
+| 赤褐 | `#8C564B` | Mic.12/13，**默认棕** |
+| 金棕 | `#BF812D` | 强调、第三分类 |
+| 浅褐 | `#C49C94` | 填充、次要 |
+| 褐紫 | `#9970AB` | Mic.15 |
+
+```python
+from scripts.nature_ad2024_colors import NATURE_BROWN_TERRACOTTA, NATURE_BROWN_GOLD
+```
+
+### 何时仍用 RdBu_r / plasma
+
+- **RdBu_r**：审稿人/合作者明确要求红=上调、蓝=下调
+- **plasma / viridis**：非对称、仅正值的连续强度（表达量、count）
+
+---
+
+## Li Lab violin+box 叠画配色
+
+用于**小提琴 + 箱线图同轴叠画**（分布 + 四分位）。源自实验室 `lilab_plot_code`；与 NMI Pastel 互补——Li Lab 偏紫/橙/灰低饱和，适合 2–3 组表达/打分对比。
+
+### pair（两组交替，成对并排）
+
+| 角色 | 色 1（主/紫） | 色 2（对照/灰） |
+|------|---------------|-----------------|
+| 小提琴填充 | `#DDC4E0` | `#E9E9E9` |
+| 箱线边框/须/中位数/离群点 | `#A362AC` | `#BEBEBE` |
+| 箱内填充 | `#FFFFFF` | `#FFFFFF` |
+| 水平参考线（可选） | `#7F7F7F`（alpha=0.5） | |
+
+### triple（三组分类轴）
+
+| 角色 | 组 1 | 组 2 | 组 3 |
+|------|------|------|------|
+| 小提琴填充 | `#DDC4E0` | `#FFD4AB` | `#E9E9E9` |
+| 箱线边框/须/中位数 | `#984EA3` | `#FF7F00` | `#BEBEBE` |
+| 箱内填充 | `#F1E6F2` | `#FAE9D8` | `#F6F6F6` |
+
+### Python 常量与调用
+
+```python
+from scripts.violin_boxplot import (
+    PALETTE_LILAB_PAIR,
+    PALETTE_LILAB_TRIPLE,
+    plot_violin_box,
+    plot_violin_box_grouped,
+)
+
+# 三组长表
+fig, ax = plot_violin_box_grouped(df, x="Group", y="score", palette="triple")
+
+# 成对自定义 positions
+fig, ax = plot_violin_box(data_list, positions, palette="pair", color_indices=[0,1,0,1])
+```
+
+完整参数与 seaborn 对比见 [violin-boxplot.md](violin-boxplot.md)。
+
 
 ### ❌ jet / rainbow
 - **问题**：感知不均匀，色盲不友好，在灰度下失去信息
@@ -210,14 +341,19 @@ ggplot(df, aes(x = gene, y = expression, fill = group)) +
 
 ```python
 import seaborn as sns
-import matplotlib.pyplot as plt
+from scripts.nature_ad2024_colors import get_diverging_cmap, get_sequential_purple_cmap
 
-# 序列数据（表达量）
-sns.heatmap(expr_data, cmap='plasma', cbar_kws={'label': 'Expression (log2 TPM)'})
+cmap_pg = get_diverging_cmap()
 
-# 发散数据（z-scores）
-sns.heatmap(zscore_data, cmap='RdBu_r', center=0, vmin=-3, vmax=3,
-            cbar_kws={'label': 'Z-score'})
+# 序列数据（表达量）— 仍用 plasma
+sns.heatmap(expr_data, cmap="plasma", cbar_kws={"label": "Expression (log2 TPM)"})
+
+# 发散数据（z-scores）— 默认 Nature 紫–绿
+sns.heatmap(zscore_data, cmap=cmap_pg, center=0, vmin=-3, vmax=3,
+            cbar_kws={"label": "Z-score"})
+
+# fold-change 若需红蓝语义
+sns.heatmap(fc_data, cmap="RdBu_r", center=0, vmin=-3, vmax=3)
 ```
 
 ### 散点图（Scatter Plot）
@@ -232,17 +368,20 @@ for i, cat in enumerate(categories):
                c=[colors[i]], label=cat, s=50, alpha=0.7)
 ax.legend()
 
-# 按连续值着色
-scatter = ax.scatter(x, y, c=values, cmap='viridis', s=50, alpha=0.7)
-plt.colorbar(scatter, label='Value')
+# 按连续值着色 — Nature 紫–绿或 plasma
+from scripts.nature_ad2024_colors import get_diverging_cmap
+scatter = ax.scatter(x, y, c=values, cmap=get_diverging_cmap(), s=50, alpha=0.7)
+plt.colorbar(scatter, label="Score")
 ```
 
 ### 小提琴图（Violin Plot）
 
+- **小提琴 + 箱线叠画**（Li Lab 风格，推荐）：见 [violin-boxplot.md](references/violin-boxplot.md)，脚本 `scripts/violin_boxplot.py`，配色 `pair` / `triple`。
+- **纯小提琴**（无箱线）：
+
 ```python
 import seaborn as sns
 
-# 使用柔和配色
 palette = sns.color_palette("Set2")
 sns.violinplot(data=df, x='condition', y='expression', palette=palette)
 ```
@@ -369,12 +508,14 @@ def simulate_colorblind(rgb, cvd_type='deuteranomaly'):
 
 | 数据类型 | 推荐配色 | 代码 |
 |---------|---------|------|
-| 基因表达 | plasma | `cmap='plasma'` |
+| 基因表达（仅正值） | plasma | `cmap='plasma'` |
 | 空间转录组 | plasma_r | `cmap='plasma_r'` |
-| Z-scores | RdBu_r | `cmap='RdBu_r', center=0` |
-| 相关性 | RdBu_r | `cmap='RdBu_r', vmin=-1, vmax=1` |
-| 细胞类型 | Set2 | `sns.color_palette("Set2")` |
-| 实验条件 | tab10 | `plt.cm.tab10.colors` |
+| Z-scores / 相关 | **Nature 紫–绿** | `get_diverging_cmap()` |
+| Fold-change（红蓝语义） | RdBu_r | `cmap='RdBu_r', center=0` |
+| UMAP / 多 cluster | Nature AD2024 定性 | `qualitative_palette(n)` |
+| 分类计数条 | 顺序紫 | `NATURE_SEQ_PURPLE` |
+| 细胞类型（柔和） | Set2 | `sns.color_palette("Set2")` |
+| 小提琴+箱线 | Li Lab pair/triple | `violin_boxplot.py` |
 
 ### 配色检查清单
 

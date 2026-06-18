@@ -4,5 +4,6 @@ __pycache__/
 *.png
 *.svg
 *.pdf
+!references/source/*.pdf
 .idea/
 .vscode/
