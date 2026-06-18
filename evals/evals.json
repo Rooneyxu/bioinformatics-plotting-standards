@@ -1,0 +1,221 @@
+{
+  "skill_name": "bioinformatics-plotting-standards",
+  "evals": [
+    {
+      "id": "no-auto-plot-deg-table-only",
+      "prompt": "我有一份 scRNA-seq 的差异基因结果 CSV（log2FC、pvalue、padj、gene_name），帮我筛选 padj<0.05 且 |log2FC|>1 的基因，输出 top20 表格就行，不用画图。",
+      "expected_output": "只输出表格或统计结果，不主动创建 matplotlib/ggplot2 图或保存 PNG/SVG/PDF。",
+      "assertions": [
+        {
+          "name": "no_figure_created",
+          "description": "未生成 PNG/SVG/PDF/TIFF 等图像文件，也未调用 matplotlib/seaborn/ggplot2 绘图。"
+        },
+        {
+          "name": "table_delivered",
+          "description": "提供了筛选后的 top20 基因表格或等价结构化输出。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "route-flowchart-to-generate-image",
+      "prompt": "帮我画一个单细胞 RNA-seq 分析 pipeline 流程图：从组织解离、建库、测序、比对、定量、QC、聚类到 cell type annotation，要有箭头和大段步骤说明，用于组会 PPT。",
+      "expected_output": "识别为流程图/示意图需求，使用 GenerateImage 或明确建议 GenerateImage，而不是用 matplotlib/ggplot2 硬画数据图。",
+      "assertions": [
+        {
+          "name": "no_data_plot_backend",
+          "description": "未用 seaborn/matplotlib/ggplot2 绘制 pipeline 流程图作为主交付。"
+        },
+        {
+          "name": "generate_image_routed",
+          "description": "明确路由到 GenerateImage，或说明流程图/信息图应走 GenerateImage 而非本 skill 的数据图栈。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "route-multipanel-to-nature-figure",
+      "prompt": "我要做 Nature 投稿的 Fig 1：左边是实验 workflow 示意图，右边 4 个 validation panel（UMAP、marker dotplot、violin、统计 bar），需要 hero panel 和完整 figure contract。",
+      "expected_output": "识别为多 panel 投稿 figure，转用 nature-figure skill 或明确说明本 skill 只做单图、该任务应走 nature-figure。",
+      "assertions": [
+        {
+          "name": "redirects_to_nature_figure",
+          "description": "明确说明多 panel 投稿 figure 应使用 nature-figure，而非在本 skill 内完成完整 Fig 1 组装。"
+        },
+        {
+          "name": "does_not_assemble_full_figure",
+          "description": "未在本 skill 流程内尝试组装完整的 5-panel 投稿 figure 作为最终交付。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "simple-multipanel-patchwork",
+      "prompt": "用 Python。把 UMAP 和 violin plot 拼成一张 1x2 的 figure，组会沟通用，模拟 scRNA-seq 数据即可。",
+      "expected_output": "在本 skill 内用 subplot_mosaic/GridSpec 完成 2-panel 组合，不走 nature-figure，走 communication 导出。",
+      "assertions": [
+        {
+          "name": "assembles_simple_multipanel",
+          "description": "生成包含 UMAP + violin 的 2-panel 组合图（非单张图）。"
+        },
+        {
+          "name": "does_not_redirect_nature_figure",
+          "description": "未将简单 2-panel 任务转交 nature-figure。"
+        },
+        {
+          "name": "communication_export",
+          "description": "导出 SVG + PNG（communication 档），未强制投稿三格式。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "backend-default-python-no-submission",
+      "prompt": "帮我用模拟 DESeq2 数据画个火山图，标注 top10 基因，先看看效果。",
+      "expected_output": "未提到投稿/R/ComplexHeatmap 时默认 Python 直接出图，不阻塞询问 Python/R。",
+      "assertions": [
+        {
+          "name": "defaults_python_without_asking",
+          "description": "未询问 Python/R 即使用 Python 完成或开始绘图。"
+        },
+        {
+          "name": "figure_or_script_produced",
+          "description": "产出火山图文件或 Python 绘图脚本。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "backend-gate-asks-on-submission",
+      "prompt": "用模拟的差异表达数据画一个 Nature 风格的火山图，标注 top15 显著基因，准备投稿。",
+      "expected_output": "用户提到投稿但未指定后端时，先问「Python 还是 R？」并停止；未默认 Python 直接出投稿图。",
+      "assertions": [
+        {
+          "name": "asks_backend_before_plotting",
+          "description": "在写绘图代码或导出图像之前，明确询问 Python 或 R。"
+        },
+        {
+          "name": "does_not_default_python",
+          "description": "未在用户回答前默认 Python 并完成整图渲染与导出。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "backend-exclusivity-python-missing",
+      "prompt": "用 Python 画一个投稿级火山图（模拟 DESeq2 输出：gene_name, log2FC, pvalue, padj）。假设 matplotlib 未安装。",
+      "expected_output": "报告 Python 依赖缺失，提供 Python-only 脚本与安装说明，禁止用 R/ggplot2 做 substitute preview 或 export。",
+      "assertions": [
+        {
+          "name": "no_cross_backend_rendering",
+          "description": "未用 R/ggplot2/ggrepel 生成替代预览或导出文件。"
+        },
+        {
+          "name": "blocker_reported",
+          "description": "清楚报告 matplotlib 或其他 Python 绘图依赖缺失，且不将非 Python 图作为完成交付。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "backend-exclusivity-r-missing",
+      "prompt": "用 R 画一个 ComplexHeatmap 风格的热图（模拟表达矩阵 + 样本注释）。假设 Rscript 不可用。",
+      "expected_output": "报告 R 运行时缺失，提供 R-only 脚本与安装说明，禁止用 Python/matplotlib 做 substitute。",
+      "assertions": [
+        {
+          "name": "no_cross_backend_rendering",
+          "description": "未用 Python/matplotlib/seaborn 生成替代预览或导出文件。"
+        },
+        {
+          "name": "blocker_reported",
+          "description": "清楚报告 R/Rscript 不可用，且不将 Python 图作为完成交付。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "publication-volcano-python",
+      "prompt": "用 Python。这是 DESeq2 结果：gene_name, log2FC, pvalue, padj（可用模拟数据）。画投稿级火山图，标注 top15 显著基因，Nature 风格，用于 manuscript supplementary figure。",
+      "expected_output": "生成 PNG 600 DPI + PDF + SVG；ticks 主题、despine、基因名斜体、adjustText 防重叠；保存后提及 qc.py --mode publication。",
+      "assertions": [
+        {
+          "name": "publication_export_bundle",
+          "description": "输出目录同时存在 .png（600 DPI）、.pdf、.svg 三种格式。"
+        },
+        {
+          "name": "uses_adjusttext_or_equivalent",
+          "description": "火山图基因标注使用 adjustText（或 transcript 中明确说明等效防重叠策略）。"
+        },
+        {
+          "name": "publication_qc_mentioned_or_run",
+          "description": "保存后运行或建议运行 scripts/qc.py --mode publication。"
+        },
+        {
+          "name": "italic_gene_labels",
+          "description": "基因名标注使用斜体（fontstyle='italic' 或等价设置）。"
+        }
+      ],
+      "files": ["evals/files/mock_deseq2_results.csv"]
+    },
+    {
+      "id": "communication-umap-preview",
+      "prompt": "用 Python。scanpy 跑完的 UMAP，6 个细胞类型，快速看一下分布，组会沟通用，不用投稿格式。",
+      "expected_output": "走 communication 档：SVG + PNG 300 DPI；PDF 非必须；不强制 600 DPI 三格式全套。",
+      "assertions": [
+        {
+          "name": "communication_export_only",
+          "description": "导出 SVG + PNG（约 300 DPI），未强制要求 PDF（除非用户额外要求）。"
+        },
+        {
+          "name": "not_publication_triple_bundle",
+          "description": "未将 600 DPI + PDF + SVG 全套作为默认必需（communication 场景）。"
+        },
+        {
+          "name": "qc_communication_mode",
+          "description": "若运行 QC，使用 --mode communication 或等价检查逻辑（DPI≥300，PDF 非必须）。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "nmi-pastel-six-group-barplot",
+      "prompt": "用 Python。6 个处理组的基因表达 barplot（模拟数据），要 Nature/NMI 风格、方法族颜色统一，不要 jet 或 rainbow。",
+      "expected_output": "分类配色使用 NMI Pastel 或 references/color_schemes.md 中的 DEFAULT_COLORS_NMI_PASTEL，避免 jet/rainbow。",
+      "assertions": [
+        {
+          "name": "no_jet_rainbow",
+          "description": "未使用 jet、rainbow 或明显红绿对立分类配色。"
+        },
+        {
+          "name": "nmi_pastel_or_documented",
+          "description": "使用 NMI Pastel 色板常量，或 transcript/代码中明确引用 color_schemes.md 的 NMI 配色。"
+        }
+      ],
+      "files": []
+    },
+    {
+      "id": "r-volcano-script-blocker",
+      "prompt": "用 R。模拟 DESeq2 结果画火山图，标注 top12 基因，theme_prism + ggrepel。假设 Rscript 不可用。",
+      "expected_output": "报告 R 阻塞，交付 R-only 脚本（ggplot2+ggprism+ggrepel），禁止 Python fallback，不要求渲染 PNG。",
+      "assertions": [
+        {
+          "name": "r_only_stack",
+          "description": "使用 ggplot2/ggprism/ggrepel，未混用 Python 预览或导出。"
+        },
+        {
+          "name": "blocker_reported",
+          "description": "清楚报告 R/Rscript 不可用。"
+        },
+        {
+          "name": "ggrepel_used",
+          "description": "脚本中含 geom_text_repel 或 ggrepel。"
+        },
+        {
+          "name": "no_cross_backend_rendering",
+          "description": "未用 Python/matplotlib 生成替代图。"
+        }
+      ],
+      "files": ["evals/files/mock_deseq2_results.csv"]
+    }
+  ]
+}

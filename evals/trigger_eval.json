@@ -1,0 +1,82 @@
+[
+  {
+    "query": "用 Python 画一个 DESeq2 火山图，padj<0.05 的基因标 top15，投稿 Nature supplementary，600 dpi",
+    "should_trigger": true
+  },
+  {
+    "query": "scanpy UMAP 跑完了，6 个 cluster，帮我出一张沟通用的图，svg 就行",
+    "should_trigger": true
+  },
+  {
+    "query": "ComplexHeatmap 画带样本注释的热图，R 里做，GO 富集结果别画，只要表达矩阵热图",
+    "should_trigger": true
+  },
+  {
+    "query": "单细胞 dotplot 看 marker genes，ggplot2 + ggprism，每组 5 个基因",
+    "should_trigger": true
+  },
+  {
+    "query": "Manhattan plot GWAS summary stats，色盲友好，pdf+svg 投稿用",
+    "should_trigger": true
+  },
+  {
+    "query": "violin plot 比较 4 个 treatment 组的 log2 expression，别用 jet",
+    "should_trigger": true
+  },
+  {
+    "query": "空间转录组 spatial plot，plasma_r colormap，标注几个 ligand 基因",
+    "should_trigger": true
+  },
+  {
+    "query": "帮我画生信图：6 组 barplot，NMI pastel 配色",
+    "should_trigger": true
+  },
+  {
+    "query": "差异基因列表算一下 padj 和 log2FC 阈值，输出 csv 表格，不用可视化",
+    "should_trigger": false
+  },
+  {
+    "query": "画一个 RNA-seq 从取样到 cell type annotation 的 pipeline 流程图，箭头和大段文字",
+    "should_trigger": false
+  },
+  {
+    "query": "Nature 投稿 Fig 1：左边 workflow 示意图 + 右边 4 个 validation panel，要 figure contract",
+    "should_trigger": false
+  },
+  {
+    "query": "用 plotly 做一个交互式 dashboard 展示单细胞数据",
+    "should_trigger": false
+  },
+  {
+    "query": "Excel 销售数据做柱状图，季度 revenue 对比",
+    "should_trigger": false
+  },
+  {
+    "query": "润色这段 Discussion 段落，改成 Nature 风格英文",
+    "should_trigger": false
+  },
+  {
+    "query": "写 Data Availability statement，RNA-seq 数据要放 GEO",
+    "should_trigger": false
+  },
+  {
+    "query": "把这篇 paper 做成组会 PPT，中文 slide",
+    "should_trigger": false
+  },
+  {
+    "query": "read csv and print head，看看有没有缺失值",
+    "should_trigger": false
+  },
+  {
+    "query": "heatmap 用 seaborn 画一下相关性矩阵，finance 股票收益率，不是生信",
+    "should_trigger": false
+  },
+  {
+    "query": "fig 2 多 panel：schematic + UMAP + violin + bar + heatmap，hero panel 论证链",
+    "should_trigger": false
+  },
+  {
+    "query": "quick matplotlib scatter 随便看看 x y 关系，没说要投稿",
+    "should_trigger": false
+  }
+]
