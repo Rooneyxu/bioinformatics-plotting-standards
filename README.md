@@ -2,7 +2,7 @@
 
 面向 **生物信息学单图与简单多 panel（2–4）** 的出版级绘图 Agent Skill，适用于 Cursor、Claude Code、Codex 等支持 `SKILL.md` 的 Agent 环境。
 
-典型图表：火山图、热图、UMAP/t-SNE、violin、dotplot、Manhattan/GWAS、spatial、barplot 等。
+典型图表：火山图、热图、UMAP/t-SNE、violin、dotplot、Manhattan/GWAS、spatial、barplot，以及**云雨图（Raincloud）、配对哑铃图（Dumbbell）、山脊图（Ridgeline）、排序棒棒糖图（Lollipop）、异构混合相关矩阵（Asymmetric Correlogram）、Funkyheatmap、UpSet、冲积桑基图（Alluvial/Sankey）、SHAP 蜂群图**等高信息密度进阶图型。
 
 ## 示意图
 
@@ -28,8 +28,9 @@
 在此基础上，作者根据自身生信分析场景做了以下定制：
 
 - 范围收窄为 **单图 + 简单 2–4 panel**（patchwork/subplot），复杂 hero panel 投稿页交给 `nature-figure`
-- **默认 Python**；仅在投稿/R/ComplexHeatmap 场景触发后端确认
-- **communication / publication** 两档导出策略 + `scripts/qc.py` 自动质检
+- 内置 **13 类高表现力图型选型表**（`references/chart-selection.md`，融合 [From Data to Viz](https://www.data-to-viz.com/) 避坑规范），在未锁死图型时自动匹配高信息密度可视化，告别单调箱线图与色块热图
+- **默认 Python**；仅在英文期刊投稿/R/ComplexHeatmap 场景触发后端确认
+- **`thesis`（北大学位论文规范，近期默认）/ `publication`（英文 SCI 期刊）/ `communication`（日常沟通）** 三档分层策略 + `scripts/thesis_style.py` 扁平 `7.5 pt` 统一字号与 `10 pt` 大写 `A/B/C/D` 面板标签 + `scripts/qc.py`（支持 PyMuPDF 字号 $\le 10.5\text{ pt}$、面板标签一致性与单位规范自动质检）
 - 使用 **skill-creator** 流程建立 12 条行为 eval，iteration-2 达到 with_skill **100%** 通过率
 
 感谢 [nature-skills](https://github.com/Yuan1z0825/nature-skills) 项目提供的优秀开源规范。
@@ -69,8 +70,8 @@ cp -R bioinformatics-plotting-standards ~/.agents/skills/
 ### 依赖
 
 ```bash
-pip install matplotlib seaborn pillow pandas numpy
-# 仅在使用 R 后端时需要 R + ggplot2 / ComplexHeatmap 等
+pip install matplotlib seaborn pillow pandas numpy pymupdf adjustText
+# 仅在使用 R 后端时需要 R + ggplot2 / ComplexHeatmap / patchwork 等
 ```
 
 ---
@@ -79,17 +80,21 @@ pip install matplotlib seaborn pillow pandas numpy
 
 ```text
 bioinformatics-plotting-standards/
-├── SKILL.md                 # Agent 主规范（含 frontmatter 触发描述）
+├── SKILL.md                 # Agent 主规范（含 frontmatter 触发描述与图型选型门）
 ├── references/              # 模块化参考文档
+│   ├── thesis-format.md     # 学位论文扁平 7.5pt 统一字号、大写 A/B/C/D 与细节规范
+│   ├── chart-selection.md   # 13 类进阶生信与方法学图型选型指南
 │   ├── when-to-plot.md
 │   ├── backend-selection.md
 │   ├── export-policy.md
 │   ├── color_schemes.md
+│   ├── violin-boxplot.md
 │   ├── heatmap-annotation.md
 │   ├── journal_requirements.md
 │   └── troubleshooting.md
 ├── scripts/
-│   ├── qc.py                # 出图后 DPI / 格式 / 留白检查
+│   ├── thesis_style.py      # 学位论文扁平 7.5pt 样式、大写面板字母与斜体 p 辅助函数
+│   ├── qc.py                # 出图后 DPI / 格式 / PDF 字号(<=10.5pt) / 面板字母一致性检查
 │   ├── violin_boxplot.py    # Li Lab 小提琴+箱线
 │   ├── heatmap_annotation.py # 热图列分组注释
 │   └── nature_ad2024_colors.py
@@ -117,9 +122,12 @@ scanpy UMAP + marker violin，简单 2-panel 横排，communication 档导出
 出图后可用 QC 脚本检查：
 
 ```bash
-python scripts/qc.py your_figure.png --mode communication
-# 投稿场景
+# 学位论文规范（近期默认：检查 600 DPI、PDF 字号<=10.5pt、大写 A/B/C/D 一致性、mol/L 单位）
+python scripts/qc.py your_figure.png --mode thesis
+# 英文 SCI 期刊投稿场景
 python scripts/qc.py your_figure.png --mode publication
+# 日常组会沟通场景
+python scripts/qc.py your_figure.png --mode communication
 ```
 
 ---
