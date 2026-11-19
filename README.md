@@ -97,6 +97,7 @@ bioinformatics-plotting-standards/
 ├── scripts/
 │   ├── thesis_style.py      # 学位论文扁平 7.5pt 样式、大写面板字母与斜体 p 辅助函数
 │   ├── alphaenzyme_colors.py # AlphaEnzyme 钢蓝–暖杏色板（80/15/5 & Fig 2c/2d/2e）
+│   ├── fetch_icon.py        # Iconify (Lucide/Ph/Heroicons/Tabler) & Bioicons (含 Servier) SVG 检索/清洗/内联工具
 │   ├── qc.py                # 出图后 DPI / 格式 / PDF 字号(<=10.5pt) / 面板字母一致性检查
 │   ├── violin_boxplot.py    # Li Lab 小提琴+箱线
 │   ├── heatmap_annotation.py # 热图列分组注释

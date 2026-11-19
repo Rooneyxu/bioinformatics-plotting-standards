@@ -328,7 +328,7 @@ ggsave("figure.svg", p, width = 4.20, height = 2.80, units = "in")
 | [references/thesis-format.md](references/thesis-format.md) | **北大学位论文 1:1 版心宽度、扁平 7.5pt 统一字号与大写 A/B/C/D 规范（近期默认）** |
 | [references/when-to-plot.md](references/when-to-plot.md) | 何时出图、GenerateImage 路由、与 nature-figure 边界 |
 | [references/chart-selection.md](references/chart-selection.md) | **19 类进阶图型选型与避坑指南**（含云雨图、哑铃图、山脊图、异构相关矩阵、Funkyheatmap、UpSet、桑基图、SHAP，及 AlphaEnzyme 6 类实战组合图） |
-| [references/svg-schematic-style.md](references/svg-schematic-style.md) | **SVG 模型架构图与数据流程示意图风格指南**（AlphaEnzyme Fig 1c 双模态柔和底块+微缩张量条、Fig 2b 纯白流程+全灰单点蓝高亮） |
+| [references/svg-schematic-style.md](references/svg-schematic-style.md) | **SVG 模型架构图与数据流程示意图风格指南 + 图标库工具**（AlphaEnzyme Fig 1c/2b 风格 + `scripts/fetch_icon.py` 调用 Iconify/Bioicons） |
 | [references/backend-selection.md](references/backend-selection.md) | Python/R 门禁与互斥规则 |
 | [references/export-policy.md](references/export-policy.md) | `thesis` / `publication` / `communication` 三档分层导出 |
 | [references/color_schemes.md](references/color_schemes.md) | 序列/发散/Nature AD2024/Li Lab/NMI Pastel/**AlphaEnzyme 钢蓝–暖杏（80/15/5 & Fig 2c/2d/2e）** |

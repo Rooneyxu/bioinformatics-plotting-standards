@@ -69,9 +69,59 @@
 
 ---
 
-## 四、与 `figgenie-paper-diagram` 联动提示
+## 四、SVG 图标库一键检索与安全内联（`scripts/fetch_icon.py`）
+
+画模型架构图、数据清洗流程图或机制示意图时，**不要从零手搓粗糙的几何图标**，直接使用本仓库自带的 `scripts/fetch_icon.py`（免鉴权、自动缓存至 `~/.cache/bio-plot-icons/`、自动给 `id` 与 `.cls-*` CSS 类加唯一前缀防样式串扰、自动等比缩放入目标方框）。
+
+### 1. 支持的两大图标源（通用工程 + 生命科学全覆盖）
+
+| 类型 | 入口前缀 / 来源 | 覆盖库与规模 | 适用元素 | 许可提醒 |
+|---|---|---|---|---|
+| **通用工程 / 流程** | **Iconify**（`lucide:`、`ph:`、`heroicons:`、`tabler:`） | 30 万+ 矢量图标（聚合 Lucide 1800+、Phosphor 9000+、Heroicons 1200+、Tabler 6200+） | 数据库、过滤漏斗、芯片/GPU、代码、文件夹、锁、显微镜简笔 | ISC / MIT（免费商用与论文发表，无需署名） |
+| **生命科学 / 医学** | **Bioicons**（`bioicons:`） | 2,829 个纯矢量 SVG（**已内置 1,375 个 Servier Medical Art + 634 个 DBCLS 图标**） | 细胞、亚细胞器、RNA/DNA、96 孔板、显微镜、测序仪、小鼠、器官、化学分子 | `CC-0` 免费免署名；`CC-BY`（含 Servier / DBCLS）须在图注或致谢注明出处 |
+
+> **风格统一规则**：同一张图内的**逻辑/工程图标**统一只用 **`lucide:`**（细线圆角，与 `0.6–0.8 pt` 线宽和 AlphaEnzyme 风格最搭，不要混用粗实心与细线）；**生物实体图标**用 **`bioicons:`**，必要时传 `--color "#316F98"` 单色化融入整图主色调。
+
+### 2. CLI 一行命令用法
+
+```bash
+SCRIPT=~/.claude/skills/bioinformatics-plotting-standards/scripts/fetch_icon.py
+
+# 1) 同时检索通用图标 + 生物图标（支持 --source all|iconify|bioicons）
+python3 "$SCRIPT" search "database" --limit 6
+python3 "$SCRIPT" search "rna" --source bioicons --limit 8
+python3 "$SCRIPT" search "microscope" --limit 6
+
+# 2) 下载、清洗命名空间并改色为独立 SVG
+python3 "$SCRIPT" fetch lucide:database --color "#316F98" --stroke-width 1.6 -o icon_db.svg
+python3 "$SCRIPT" fetch bioicons:dna-2 --color "#316F98" -o icon_dna.svg
+python3 "$SCRIPT" fetch bioicons:96_well_plate_cells -o icon_plate.svg   # 不传 --color 保留原色
+
+# 3) 直接输出可嵌进主图的内联 <g> 片段（自动缩放居中至 (x, y) 的 size×size pt 盒内）
+python3 "$SCRIPT" fetch lucide:filter --inline-g --x 12 --y 24 --size 14 --color "#303030"
+```
+
+### 3. 在 Python SVG 生成脚本中直接调用
+
+```python
+import sys
+sys.path.insert(0, "/home/wzx/.claude/skills/bioinformatics-plotting-standards")
+from scripts.fetch_icon import inline_icon_g
+
+# 直接返回已清洗命名空间、无外链依赖的 <g> 字符串（完全通过 FigGenie lint.py 检查）
+g_db    = inline_icon_g("lucide:database", x=10, y=10, size=18, color="#316F98", stroke_width=1.6)
+g_plate = inline_icon_g("bioicons:96_well_plate_cells", x=80, y=8, size=24)  # 保留原色
+g_dna   = inline_icon_g("bioicons:dna-2", x=120, y=8, size=24, color="#316F98")
+```
+
+> **禁止外链**：绝不用 `<image href="https://...">` 引入网络图标；一律使用 `inline_icon_g()` 内联矢量路径，保证离线打开、矢量 PDF 导出与 `FigGenie` Linter 100% 通过。
+
+---
+
+## 五、与 `figgenie-paper-diagram` 联动提示
 
 使用 `figgenie-paper-diagram` 绘制论文框架图或数据流程图时，可直接声明：
 - **「按 `svg-schematic-style.md` 的 AlphaEnzyme Fig 1c 风格绘制」** $\rightarrow$ 启用双模态冰蓝/暖杏无黑框底色卡 + 1D 渐变张量条 + `#303030` 炭灰文字；
-- **「按 `svg-schematic-style.md` 的 AlphaEnzyme Fig 2b 风格绘制」** $\rightarrow$ 启用纯白细黑框清洗流程 + 下方全灰单点钴蓝 `#2066AC` 队列统计缩略图。
+- **「按 `svg-schematic-style.md` 的 AlphaEnzyme Fig 2b 风格绘制」** $\rightarrow$ 启用纯白细黑框清洗流程 + 下方全灰单点钴蓝 `#2066AC` 队列统计缩略图；
+- 需要丰富图标时，直接调用 `scripts/fetch_icon.py` 检索并内联 **Lucide / Phosphor / Heroicons / Tabler** 与 **Bioicons（含 Servier）** 矢量图标。
 - 字体与尺寸仍遵循本仓库默认规范（毕业论文模式：`Arial`、`text-rendering="geometricPrecision"`、宽 $\le 446\text{ pt}$、正文 `7.5 pt`、大写 `10 pt` 面板字母）。
