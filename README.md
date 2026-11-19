@@ -28,7 +28,8 @@
 在此基础上，作者根据自身生信分析场景做了以下定制：
 
 - 范围收窄为 **单图 + 简单 2–4 panel**（patchwork/subplot），复杂 hero panel 投稿页交给 `nature-figure`
-- 内置 **13 类高表现力图型选型表**（`references/chart-selection.md`，融合 [From Data to Viz](https://www.data-to-viz.com/) 避坑规范），在未锁死图型时自动匹配高信息密度可视化，告别单调箱线图与色块热图
+- 内置 **19 类高表现力图型选型表**（`references/chart-selection.md`，融合 [From Data to Viz](https://www.data-to-viz.com/) 避坑规范与 *AlphaEnzyme* 6 类方法学实战组合图），在未锁死图型时自动匹配高信息密度可视化，告别单调箱线图与色块热图
+- 新增 **AlphaEnzyme 钢蓝–暖杏配色体系**（`scripts/alphaenzyme_colors.py`：80/15/5 黄金法则 + Fig 2c/2d/2e 方法学对比色板）与 **SVG 模型/数据流程示意图风格指南**（`references/svg-schematic-style.md`：Fig 1c 双模态柔和底块+微缩张量条、Fig 2b 纯白流程+全灰单点蓝高亮）
 - **默认 Python**；仅在英文期刊投稿/R/ComplexHeatmap 场景触发后端确认
 - **`thesis`（北大学位论文规范，近期默认）/ `publication`（英文 SCI 期刊）/ `communication`（日常沟通）** 三档分层策略 + `scripts/thesis_style.py` 扁平 `7.5 pt` 统一字号与 `10 pt` 大写 `A/B/C/D` 面板标签 + `scripts/qc.py`（支持 PyMuPDF 字号 $\le 10.5\text{ pt}$、面板标签一致性与单位规范自动质检）
 - 使用 **skill-creator** 流程建立 12 条行为 eval，iteration-2 达到 with_skill **100%** 通过率
@@ -83,7 +84,8 @@ bioinformatics-plotting-standards/
 ├── SKILL.md                 # Agent 主规范（含 frontmatter 触发描述与图型选型门）
 ├── references/              # 模块化参考文档
 │   ├── thesis-format.md     # 学位论文扁平 7.5pt 统一字号、大写 A/B/C/D 与细节规范
-│   ├── chart-selection.md   # 13 类进阶生信与方法学图型选型指南
+│   ├── chart-selection.md   # 19 类进阶生信与方法学图型选型指南（含 AlphaEnzyme 6 类实战组合图）
+│   ├── svg-schematic-style.md # SVG 模型架构图与数据流程示意图风格指南（AlphaEnzyme Fig 1c / 2b）
 │   ├── when-to-plot.md
 │   ├── backend-selection.md
 │   ├── export-policy.md
@@ -94,6 +96,7 @@ bioinformatics-plotting-standards/
 │   └── troubleshooting.md
 ├── scripts/
 │   ├── thesis_style.py      # 学位论文扁平 7.5pt 样式、大写面板字母与斜体 p 辅助函数
+│   ├── alphaenzyme_colors.py # AlphaEnzyme 钢蓝–暖杏色板（80/15/5 & Fig 2c/2d/2e）
 │   ├── qc.py                # 出图后 DPI / 格式 / PDF 字号(<=10.5pt) / 面板字母一致性检查
 │   ├── violin_boxplot.py    # Li Lab 小提琴+箱线
 │   ├── heatmap_annotation.py # 热图列分组注释

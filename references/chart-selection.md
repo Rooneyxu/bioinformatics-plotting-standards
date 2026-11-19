@@ -138,13 +138,59 @@
 
 ---
 
+## 七、方法学与评测高阶组合图型（AlphaEnzyme / Nature Methods 实战范式）
+
+> 面向计算生物学 / AI 方法学论文（多数据集基准评测、OOD 泛化、筛选预算、候选排序与队列展示），可直接与 `scripts/alphaenzyme_colors.py` 搭配使用。
+
+### 14. 热图 + 共享纵轴箱线图 + Top-$k$ 胜率条三联图（Heatmap + Marginal Boxplot + Win-Rate Strip）
+- **原型参考**：*AlphaEnzyme* Fig 3f。
+- **适用场景**：在多个独立数据集/折/蛋白任务（如 8–35 个空间转录组数据集或留一法交叉验证折）上综合比较 5–10 个方法，既想看清**逐数据集明细**，又想直接总结**跨数据集稳定性**和**进入前三/第一的胜率**。
+- **视觉编码**：严格共享 Y 轴（按综合表现排序各方法行）——**左面板**画逐数据集指标热图（推荐 `get_alphaenzyme_blue_cmap()`）；**中面板**紧贴热图右侧画各方法跨数据集分布的横向窄箱线图（本方法高亮钢蓝、其余冷灰）；**右面板**紧贴一根横向微缩条展示 `Top-1 / Top-3 frequency` 并在条尾直接标百分比。
+- **实现路径**：
+  - **Python**：`GridSpec(1, 3, width_ratios=[4.5, 2.0, 1.3], wspace=0.08)` + `sharey=ax_heat`，中右两轴关闭 `yticklabels`。
+  - **R**：`patchwork` 水平拼接 `geom_tile()` + `geom_boxplot()` + `geom_col()` 并设 `plot_layout(widths = c(4.5, 2, 1.3))`。
+
+### 15. 均值柱/散点 + 配对差值 $\Delta$ 置信区间森林图（Paired $\Delta$ Bootstrap Forest Plot）
+- **原型参考**：*AlphaEnzyme* Fig 2e–f（亦呼应 Gardner–Altman Estimation Plot）。
+- **适用场景**：在相同查询集/样本集上对比本方法与多个 Baseline，替代仅在柱顶标 `* / ** / ***` 的传统做法，直观交代**绝对性能**与**相对每个 Baseline 的配对净增益及 95% Bootstrap 置信区间**。
+- **视觉编码**：**左面板**画分组柱状图（Fig 2e 冷灰阶 + 主角钢蓝 `#2C6C9B`），叠加各折/子集空心白底圆点（`facecolor='white'`）与误差棒；**右面板**以各 Baseline 为纵轴，画 `x = 0` 竖虚线，正增益区铺极淡冰蓝底 `#F0F5FB`，用钢蓝点+横误差棒画配对差值 $\Delta$ 与 95% CI（右侧直标 `+0.13` 等数值，误差棒完全在 0 右侧即严格显著）。
+- **实现路径**：`GridSpec(1, 2, width_ratios=[2.2, 1.2])`，右图用 `ax.errorbar(..., fmt='o', capsize=2)` + `ax.axvline(0, ls='--', color='#8C8C8C')` + `ax.axvspan(0, xmax, color='#F0F5FB', zorder=0)`。
+
+### 16. 双阈值四象限 OOD 难度分层图（2D Stratification Quadrant Plot）
+- **原型参考**：*AlphaEnzyme* Fig 2g。
+- **适用场景**：剖析模型泛化边界，证明「在分布外（OOD）或高难度样本上本方法依然领先」（如横轴放序列相似度/空间密度，纵轴放特征相似度/转录本稀疏度）。
+- **视觉编码**：散点按目标指标连续着色（钢青蓝单色阶），用**横竖两条虚线阈值**将平面切成 Q1–Q4 四个象限（标注各象限样本数或区域名称），在左下/右下空白处嵌一张 **Inset 微缩柱状图**汇总四个象限的均值对比（仅高亮最难 OOD 象限柱体为深蓝 `#2066AC`）。
+- **实现路径**：主图 `ax.scatter()` + `ax.axvline()` / `ax.axhline()` + `ax.inset_axes([0.55, 0.08, 0.40, 0.32])` 画四象限汇总柱图。
+
+### 17. 筛选预算—收益带状曲线（Budget / Top-$k$ Enrichment Ribbon）
+- **原型参考**：*AlphaEnzyme* Fig 2c & Fig 4c。
+- **适用场景**：横轴为递增的资源/候选预算（如筛选 Top-8 $\rightarrow$ Top-32 候选变体、空间 Gene Panel 基因数 $50 \rightarrow 500$、采样细胞数比例），纵轴为命中率、nDCG 或聚类保持度。
+- **视觉编码**：本方法用深钢蓝实线 + 圆形 Marker + 半透明阴影带（`alpha=0.18`，表 SEM 或 95% CI）；各 Baseline 用冷灰/暖沙虚线配不同形状 Marker（`THESIS_MARKERS`），清晰呈现全预算区间内的持续领先。
+- **实现路径**：`ax.plot()` + `ax.fill_between(x, mean - sem, mean + sem, alpha=0.18)`（Python）；`geom_ribbon()` + `geom_line()` + `geom_point()`（R）。
+
+### 18. 排序瀑布柱图 + 留白内嵌属性表 + 画中画阴性对照窗（Waterfall + Embedded Table & Insets）
+- **原型参考**：*AlphaEnzyme* Fig 5d。
+- **适用场景**：展示 Top-20 至 Top-50 候选基因/突变体/细胞亚群的实验验证或打分排序（典型呈左高右低长尾陡降分布，右上方天然空出大片留白）。
+- **视觉编码**：柱体按实测值降序排成瀑布（超越对照线的正向命中用钢蓝/暖杏高亮，其余浅灰，叠加生物学重复散点与均值误差棒，画一条水平对照基线 `y = 1.0`）；**直接利用右上大块留白**，左侧嵌一块极简微缩属性表（列出 Top 命中项的关键突变/特征），右侧嵌 1–2 个画中画小窗（`inset_axes` 展示阴性对照/随机筛选组结果或整体命中率饼图），一张图闭环讲完湿实验/筛选验证。
+- **实现路径**：`ax.bar()` + `ax.table()`（或精准排版文本框）+ `ax.inset_axes()`。
+
+### 19. 数据集队列构成与清洗概览组合板（Cohort Curation & Spotlight Strip）
+- **原型参考**：*AlphaEnzyme* Fig 2b（SVG 风格细则见 [svg-schematic-style.md](svg-schematic-style.md)）。
+- **适用场景**：展示自建/整合的大规模多平台数据集（如 35 套空间转录组数据）的来源筛选、训练/测试集划分与样本组成。
+- **视觉编码**：顶部为纯白细黑框数据清洗管线 + 时间/平台切分叉；下方紧贴「全灰单点蓝 `#2066AC`」风格的微缩类别饼图与规模分布直方图（只把占比最大或最核心的类别/峰值柱标蓝，其余全灰降噪）。
+- **实现路径**：纯数据组合可用 Python `GridSpec`（顶部 `axis('off')` 流程 + 下方 `pie` & `bar`）；追求极致矢量排版可走 SVG / `figgenie-paper-diagram`。
+
+---
+
 ## 快速选型检查表（写代码前自检）
 
 | 你的初始念头 | 先停一秒自问 | 更具表现力的升级方案 |
 |---|---|---|
-| 画普通 Boxplot | 分布是否有双峰/偏态？样本量是否值得展示？是否是同一批对象的成对前后对比？ | 多组分布 → **Raincloud / Li Lab Violin+Box**；成对前后 → **Dumbbell / Slopegraph**；沿连续梯度 → **Ridgeline** |
-| 画普通 Barplot | 是否只是单维排名/消融增益？带误差棒是否掩盖了真实分布？ | 单维排名/富集/消融 → **Ordered Lollipop**（按值排序）；小样本均值对比 → **Stripplot + Mean/CI** |
-| 画普通色块 Heatmap | 是否是 3–8 个连续变量看相关？是否是多方法跨多类指标的综合 Benchmark？ | 3–8 变量相关 → **Asymmetric Correlogram**；方法学大表 → **Funkyheatmap** |
-| 画普通 Scatter | 点数是否 $>1000$ 导致糊成一团？单变量边缘分布是否有信息量？ | 大样本双变量 → **2D KDE / Hexbin + Marginal Density** |
+| 画普通 Boxplot | 分布是否有双峰/偏态？样本量是否值得展示？是否是同一批对象的成对前后对比？ | 多组分布 → **Raincloud / Li Lab Violin+Box / AlphaEnzyme Fig 2d**；成对前后 → **Dumbbell / Slopegraph**；沿连续梯度 → **Ridgeline** |
+| 画普通 Barplot | 是否是单维排名？是否带多折/多样本对比各 Baseline？是否呈长尾 Top-$N$ 瀑布分布？ | 单维排名/消融 → **Ordered Lollipop**；多方法对比 → **均值柱 + 配对 $\Delta$ 森林图（#15）**；Top-$N$ 筛选验证 → **瀑布柱 + 内嵌表/画中画（#18）** |
+| 画普通色块 Heatmap | 是否是 3–8 个连续变量看相关？是否是多方法跨多数据集的 Benchmark？ | 3–8 变量相关 → **Asymmetric Correlogram**；多方法跨数据集 → **热图+共享纵轴箱线+胜率条三联图（#14）** 或 **Funkyheatmap（#7）** |
+| 画普通 Scatter | 点数是否 $>1000$ 导致糊成一团？是否在论证双维度难度分层（OOD 泛化）？ | 大样本双变量 → **2D KDE / Hexbin + Marginal Density**；难度分层泛化 → **双阈值四象限图 + Inset 汇总柱（#16）** |
+| 画普通折线图 | 横轴是否是候选数/基因数预算，且有多折重复？ | 预算递增收益 → **预算—收益带状曲线（#17，带 SEM/CI 阴影与不同 Marker）** |
 | 画多组 Venn 图 | 集合数是否 $\ge 4$？是否还想看各交集子集的定量特征？ | $\ge 4$ 组交集 → **UpSet Plot**（可叠属性箱线面板） |
 | 画混淆矩阵看聚类对比 | 是否在讲“亚群分裂/合并/重分配”或跨层映射的故事？ | 2–4 层类别流转 → **Alluvial / Sankey Diagram** |
+| 介绍自建/汇总数据集 | 是否要同时说清筛选流程、数据集切分和样本构成分布？ | 队列概览 → **数据集队列清洗与单点蓝高亮组合板（#19）** |

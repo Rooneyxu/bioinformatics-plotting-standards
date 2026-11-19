@@ -223,11 +223,67 @@ ggplot(df, aes(x = gene, y = expression, fill = group)) +
 |---|---|
 | 2–3 组简单对比 | Nature 三色或 Li Lab triple |
 | **小提琴+箱线叠画（Li Lab）** | pair / triple；见 [violin-boxplot.md](violin-boxplot.md) |
-| 4–8 组方法/变体对比 | NMI Pastel |
+| **4–5 组方法对比柱图 / 箱线图 / 小提琴图（推荐）** | **AlphaEnzyme Fig 2c/2d（3 冷灰 + 1 暖沙 `#DBAE74` + 1 主角钢蓝 `#316F98`）** |
+| **5–8 组方法学 Benchmark 柱图 / 箱线图（极简克制）** | **AlphaEnzyme Fig 2e（全冷灰渐变阶梯 + 唯一主角钢蓝 `#2C6C9B`）** 或 NMI Pastel |
 | **UMAP / 多细胞亚群（含棕）** | **Nature AD2024 定性色** `qualitative_palette()` |
-| 连续表达/强度 | plasma / viridis；**分类计数条**用顺序紫 `NATURE_SEQ_PURPLE` |
-| z-score / 相关 / 连续表型 | **Nature 紫–绿发散**（默认）；`RdBu_r` 仅当红蓝语义必要 |
+| 连续表达/强度 | plasma / viridis；**分类计数条**用顺序紫 `NATURE_SEQ_PURPLE`；**单向相关性/AUC 热图**可用 **AlphaEnzyme 钢青蓝 `get_alphaenzyme_blue_cmap()`** |
+| z-score / 相关 / 连续表型 | **Nature 紫–绿发散**（默认）；`RdBu_r` 仅当红蓝语义必要；冷暖高级替代可用 **AlphaEnzyme 钢蓝–暖杏发散** |
 | 火山 fold-change 热图 | `RdBu_r` 或 Nature 紫–绿（与全文统一即可） |
+
+---
+
+## AlphaEnzyme 钢蓝–暖杏配色体系（Benchmark 与方法学论文首选推荐）
+
+源自 *AlphaEnzyme*（Liu et al., bioRxiv 2026.11.04.764416v2）Fig 1–5 实测提取，封装于 `scripts/alphaenzyme_colors.py`。**以后画多方法柱状图、箱线图/小提琴图对比、单向相关性热图或队列单点高亮图时，优先主动推荐这套配色。**
+
+### 1. 黄金视觉比例：80 / 15 / 5 法则
+
+| 占比 | 色系角色 | 核心 Hex 色值 | 适用位置 |
+|---|---|---|---|
+| **80%** | **冷调钢青蓝单色阶** | `#195E8D`（深海钢蓝）、`#2066AC`（钴钢蓝）、`#316F98`（主角钢蓝）、`#5C98B6`（雾青蓝）、`#90B6C9`（浅雾蓝）、`#C3D6E0`（冰岩蓝） | 本方法主角、主模态架构、单向热图梯度 |
+| **15%** | **暖杏沙色系呼应** | `#DBAE74`（暖沙金）、`#EABB8E`（暖杏）、`#F4E3CF`（浅杏奶色）、`#FCF0EA`（极淡杏底衬） | 第二模态、打破全灰单调的次级对比法、湿实验呼应 |
+| **5%** | **焦糖朱橙点睛** | `#D55E04` | 全场仅点缀 Top Hit、峰值增益标注或核心突变位点 |
+| *辅助* | **冷岩灰 + 冰蓝底衬 + 炭灰字** | 灰阶 `#E4E6E8 → #7D8591`；底衬 `#F0F5FB` / `#F6F7FA`；字 `#303030` | 普通 Baseline 对照、卡片分区底色、替代死黑正文 |
+
+### 2. Fig 2c / 2d 风格：4–5 方法柱状图 / 箱线图 / 小提琴图配色
+
+**特点**：相比全灰柱更有层次，用 **1 个柔和暖沙色**（标记次重要/特异对比 Baseline）打破多根灰柱的单调，同时让最右侧（或最顶）的**主角深钢蓝**稳居视觉焦点；画箱线图/小提琴图时用对应极浅底色填充 + 深一阶描边，配白色空心散点。
+
+| 顺位 | 角色 | Fig 2c 柱图填充 (`ALPHAENZYME_FIG2C_BARS`) | Fig 2d 箱线/小提琴填充 (`FILLS`) | Fig 2d 边框 (`EDGES`) |
+|---|---|---|---|---|
+| 1 | Baseline 1 | `#B6B9C5`（浅紫灰） | `#E6E8EC` | `#9BA0AD` |
+| 2 | Baseline 2 | `#ACB3B2`（中冷灰） | `#E3E5E7` | `#8E9697` |
+| 3 | **特色对比 Baseline** | **`#DBAE74`（暖沙金）** | **`#F4E3CF`（浅杏奶）** | **`#C99658`** |
+| 4 | 强 Baseline | `#8D9798`（深岩灰） | `#D9DFE4` | `#6E797D` |
+| 5 | **本方法（Hero）** | **`#316F98`（深钢青蓝）** | **`#BFD2E2`（浅冰蓝）** | **`#2C6C9B`** |
+
+### 3. Fig 2e 风格：5–8 方法基准对比（全冷灰渐变阶梯 + 唯一主角蓝）
+
+**特点**：**极致的视觉聚光灯（Spotlight）**——所有 Baseline 按性能从弱到强排成由浅到深的纯冷灰渐变（`#E4E6E8 → #D0D3D7 → #B9C0C8 → #9FA7B0 → #7D8591`），**全图只有你的方法使用深钢蓝 `#2C6C9B`**；柱顶叠白色空心折/重复散点（`o`）与 95% 置信区间误差棒。非常适合对比 5–8 个 Baseline 的主 Benchmark 图。
+
+### 4. Python 调用示例
+
+```python
+from scripts.alphaenzyme_colors import (
+    ALPHAENZYME_CORE,
+    ALPHAENZYME_FIG2C_BARS,
+    ALPHAENZYME_FIG2D_VIOLIN_FILLS,
+    ALPHAENZYME_FIG2D_VIOLIN_EDGES,
+    ALPHAENZYME_FIG2E_MONO_BARS,
+    get_mono_hero_palette,
+    get_alphaenzyme_blue_cmap,
+    get_alphaenzyme_diverging_cmap,
+)
+
+# 1) Fig 2c 风格 5 方法分组柱图 / 箱线图
+sns.barplot(data=df, x="metric", y="score", hue="method", palette=ALPHAENZYME_FIG2C_BARS)
+
+# 2) Fig 2e 风格 N 方法基准对比（全冷灰 + 唯一主角钢蓝）
+palette = get_mono_hero_palette(n_methods=6, hero_last=True)
+
+# 3) Fig 3f 风格单向钢青蓝热图
+sns.heatmap(corr_df, cmap=get_alphaenzyme_blue_cmap(), vmin=0, vmax=1)
+```
 
 ---
 
@@ -522,6 +578,9 @@ def simulate_colorblind(rgb, cvd_type='deuteranomaly'):
 | 基因表达（仅正值） | plasma | `cmap='plasma'` |
 | 空间转录组 | plasma_r | `cmap='plasma_r'` |
 | Z-scores / 相关 | **Nature 紫–绿** | `get_diverging_cmap()` |
+| 单向相关 / AUC / R² 热图 | **AlphaEnzyme 钢青蓝** | `get_alphaenzyme_blue_cmap()` |
+| 4–5 方法箱线/小提琴/柱图 | **AlphaEnzyme Fig 2c/2d** | `ALPHAENZYME_FIG2C_BARS` / `FIG2D_VIOLIN_FILLS` |
+| 5–8 方法基准对比（单主角） | **AlphaEnzyme Fig 2e** | `get_mono_hero_palette(n)` |
 | Fold-change（红蓝语义） | RdBu_r | `cmap='RdBu_r', center=0` |
 | UMAP / 多 cluster | Nature AD2024 定性 | `qualitative_palette(n)` |
 | 分类计数条 | 顺序紫 | `NATURE_SEQ_PURPLE` |

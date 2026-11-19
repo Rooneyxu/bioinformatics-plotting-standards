@@ -75,7 +75,12 @@ description: "生物信息学出版与学位论文级数据可视化：火山图
 | 单维数值排名（消融增益、重要性、富集得分） | **排序棒棒糖图（Ordered Lollipop，按值排序）** | 粗重柱状图 |
 | 3–8 个连续变量成对相关（跨平台/重复/特征正交） | **异构混合相关矩阵（Asymmetric Correlogram：下三角 2D KDE+拟合，对角线密度，上三角相关气泡）** | 纯色块热图 / 过绘散点矩阵 |
 | 大样本双变量关系（$>1000$ 点）+ 单变量分布 | **2D KDE 等高线 / Hexbin + 边际密度图（Marginal Plot）** | 普通不透明散点图 |
-| 多方法 × 多数据集/多维度指标综合 Benchmark | **Funkyheatmap（多几何编码表）** 或 **分轴归一化雷达图（$\le 4$ 方法）** | 单一色块指标热图 / 大表格 |
+| 多方法 × 多数据集/多维度指标综合 Benchmark | **热图 + 共享纵轴箱线 + Top-$k$ 胜率条三联图**（Fig 3f）、**Funkyheatmap** 或 **分轴归一化雷达图（$\le 4$ 方法）** | 单一色块指标热图 / 大表格 |
+| 同数据集对比多个 Baseline（强调显著增益） | **均值柱/空心散点 + 配对差值 $\Delta$ 95% CI 森林图**（Fig 2e–f / Gardner–Altman） | 仅在柱顶标 `* / **` 的普通柱图 |
+| 双维度任务难度分层 / OOD 泛化边界论证 | **双阈值四象限分层图 + 象限汇总 Inset 柱图**（Fig 2g） | 不分难度的全局均值柱图 |
+| 候选数 / Gene Panel 规模递增的预算—收益曲线 | **预算—收益带状曲线（实线/虚线 + SEM/CI 阴影 + 不同 Marker）**（Fig 2c/4c） | 无置信带的普通折线图 |
+| Top-$N$ 长尾候选验证排序（右上方留白大） | **排序瀑布柱图 + 留白内嵌属性表 + 画中画阴性对照窗**（Fig 5d） | 拆散的多张小柱图 + 独立表格 |
+| 自建/整合多平台数据集的筛选与构成概览 | **数据清洗流程 + 全灰单点蓝高亮饼图/直方图组合板**（Fig 2b） | 杂乱彩虹饼图 / 纯文字描述 |
 | 算法精度 vs 耗时/显存的可扩展性权衡 | **帕累托前沿气泡图（Pareto Frontier Bubble）** | 分开的精度柱图 + 时间柱图 |
 | $\ge 4$ 个基因集/检出集的交集结构 | **UpSet Plot**（可叠定量属性子面板） | 四叶/五叶韦恩图 |
 | 聚类簇对应、标签重分配、跨层生物学映射 | **冲积图 / 桑基图（Alluvial / Sankey）**；对称共定位用 **弦图（Chord）** | 混淆矩阵色块 |
@@ -135,11 +140,11 @@ ax.tick_params(axis="both", labelsize=7)
 
 ### 4. 选择配色方案
 
-- **序列数据**：`plasma` / `plasma_r`（仅正值强度）
-- **发散数据**：**Nature AD2024 紫–绿**（默认）；`RdBu_r` 仅当红蓝语义必要
+- **序列数据**：`plasma` / `plasma_r`（表达/空间强度）；**单向相关/AUC 热图**优先备选 **AlphaEnzyme 钢青蓝**（`get_alphaenzyme_blue_cmap()`）
+- **发散数据**：**Nature AD2024 紫–绿**（默认）；`RdBu_r` 仅当红蓝语义必要；冷暖高级备选 **AlphaEnzyme 钢蓝–暖杏发散**
 - **UMAP / 多 cluster**：Nature AD2024 定性色（含棕 `#8C564B`）
-- **分类对比（4–8 组）**：NMI Pastel
-- **小提琴+箱线叠画**：Li Lab `pair` / `triple`
+- **方法对比（柱图 / 箱线图 / 小提琴图）**：优先主动推荐 **AlphaEnzyme 钢蓝–暖杏（80/15/5 法则）**——4–5 组用 **Fig 2c/2d**（3 冷灰 + 1 暖沙 `#DBAE74` + 1 主角钢蓝 `#316F98`），5–8 组单主角用 **Fig 2e**（全冷灰阶梯 + 唯一主角钢蓝 `#2C6C9B`），备选 **NMI Pastel**
+- **小提琴+箱线叠画（2–3 组表达对比）**：Li Lab `pair` / `triple`
 - **避免**：jet、rainbow、红绿组合
 
 ### 5. 移除不必要的边框
@@ -310,7 +315,7 @@ ggsave("figure.svg", p, width = 4.20, height = 2.80, units = "in")
 | 序列配色 | plasma | plasma | 仅正值强度 |
 | 发散配色 | Nature 紫–绿 | Nature 紫–绿 | 默认；`RdBu_r` 备选 |
 | UMAP / 多 cluster | Nature AD2024 定性 | Nature AD2024 定性 | 含棕 `#8C564B` |
-| 分类（多组 bar） | NMI Pastel | NMI Pastel | 见 color_schemes.md |
+| 分类（方法对比柱/箱/小提琴） | AlphaEnzyme Fig 2c/2e 或 NMI Pastel | AlphaEnzyme Fig 2c/2e 或 NMI Pastel | 见 `alphaenzyme_colors.py` 与 `color_schemes.md` |
 | 小提琴+箱线 | Li Lab pair/triple | Li Lab pair/triple | 见 violin-boxplot.md |
 | seaborn 主题 | ticks | ticks | |
 
@@ -322,10 +327,11 @@ ggsave("figure.svg", p, width = 4.20, height = 2.80, units = "in")
 |---|---|
 | [references/thesis-format.md](references/thesis-format.md) | **北大学位论文 1:1 版心宽度、扁平 7.5pt 统一字号与大写 A/B/C/D 规范（近期默认）** |
 | [references/when-to-plot.md](references/when-to-plot.md) | 何时出图、GenerateImage 路由、与 nature-figure 边界 |
-| [references/chart-selection.md](references/chart-selection.md) | **进阶图型选型与避坑指南**（云雨图、哑铃图、山脊图、异构相关矩阵、Funkyheatmap、UpSet、冲积桑基图、SHAP 等） |
+| [references/chart-selection.md](references/chart-selection.md) | **19 类进阶图型选型与避坑指南**（含云雨图、哑铃图、山脊图、异构相关矩阵、Funkyheatmap、UpSet、桑基图、SHAP，及 AlphaEnzyme 6 类实战组合图） |
+| [references/svg-schematic-style.md](references/svg-schematic-style.md) | **SVG 模型架构图与数据流程示意图风格指南**（AlphaEnzyme Fig 1c 双模态柔和底块+微缩张量条、Fig 2b 纯白流程+全灰单点蓝高亮） |
 | [references/backend-selection.md](references/backend-selection.md) | Python/R 门禁与互斥规则 |
 | [references/export-policy.md](references/export-policy.md) | `thesis` / `publication` / `communication` 三档分层导出 |
-| [references/color_schemes.md](references/color_schemes.md) | 序列/发散/Nature AD2024/Li Lab/NMI Pastel |
+| [references/color_schemes.md](references/color_schemes.md) | 序列/发散/Nature AD2024/Li Lab/NMI Pastel/**AlphaEnzyme 钢蓝–暖杏（80/15/5 & Fig 2c/2d/2e）** |
 | [references/violin-boxplot.md](references/violin-boxplot.md) | 小提琴+箱线叠画（matplotlib 推荐、配色、参数） |
 | [references/heatmap-annotation.md](references/heatmap-annotation.md) | 热图列分组注释（GridSpec 分轴，避免底栏叠字） |
 | [references/journal_requirements.md](references/journal_requirements.md) | Nature/Cell/Science 尺寸与字体 |
