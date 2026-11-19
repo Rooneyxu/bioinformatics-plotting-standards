@@ -14,7 +14,8 @@ description: "生物信息学出版与学位论文级数据可视化：火山图
 | 单张生信数据图 | 本 skill |
 | 简单 2–4 panel 数据图组合 | 本 skill（patchwork / GridSpec） |
 | 复杂投稿 figure、hero panel、figure contract | `nature-figure` |
-| 流程图、示意图、大段文字信息图 | **GenerateImage** |
+| 可编辑矢量模型架构图 / 方法框架图 / 数据清洗流程图 | **`figgenie-paper-diagram`** + 本 skill `references/svg-schematic-style.md` & `scripts/fetch_icon.py` |
+| 强生物插画 / 概念图形摘要 / 大段文字信息图 | **GenerateImage**（或 `figgenie-paper-diagram`） |
 | 纯分析、表格即可 | 不出图；可**建议**出图，等用户确认 |
 
 详见 [references/when-to-plot.md](references/when-to-plot.md)。

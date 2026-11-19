@@ -21,7 +21,8 @@
 |---|---|---|
 | 单张生信数据图 | 本 skill | seaborn/matplotlib 或 ggplot2 |
 | 简单 2–4 panel 数据图组合 | 本 skill | patchwork（R）或 subplot_mosaic（Python） |
-| 流程图、示意图、信息图 | **GenerateImage** | 大段文字、箭头逻辑、概念框架 |
+| 可编辑矢量模型架构图 / 数据筛选流程图 | **`figgenie-paper-diagram`** + 本 skill `svg-schematic-style.md` & `fetch_icon.py` | 纯矢量 SVG/PDF/PPTX、无头浏览器 Lint 校验 |
+| 强生物插画 / 概念流程图 / 大段文字信息图 | **GenerateImage** | 概念框架、艺术化生物机制、组会 PPT 示意图 |
 | 复杂投稿 figure（hero panel、figure contract、schematic-led） | **nature-figure** | 论证链与整页编排 |
 | 非生信通用图表 | 跳过本 skill | |
 | 纯数据分析无画图需求 | 跳过 | 输出表格/数值；可建议但不自动生成图 |
